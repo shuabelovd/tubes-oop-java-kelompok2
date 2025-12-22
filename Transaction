@@ -2,13 +2,11 @@ import java.time.LocalDate;
 import java.io.Serializable;
 
 class Transaction implements Serializable {
-
-
-    public LocalDate date;
-    public TransactionCategory category;
-    public String subCategory;
-    public double amount;
-    public String description;
+    private LocalDate date;
+    private TransactionCategory category;
+    private String subCategory;
+    private double amount;
+    private String description;
 
     public Transaction(
             LocalDate date,
@@ -16,13 +14,35 @@ class Transaction implements Serializable {
             String subCategory,
             double amount,
             String description
-    ) {
+    ) throws InvalidTransactionException {  
+        if (amount < 0) {
+            throw new InvalidTransactionException("Nominal tidak boleh negatif!");
+        }
         this.date = date;
         this.category = category;
         this.subCategory = subCategory;
         this.amount = amount;
         this.description = description;
     }
+
+    // Getter
+    public LocalDate getDate() {
+        return date;
+    }
+    public TransactionCategory getCategory() {
+        return category;
+    }
+    public String getSubCategory() {
+        return subCategory;
+    }
+    public double getAmount() {
+        return amount;
+    }
+    public String getDescription() {
+        return description;
+    }
+}
+
 
 
 }
