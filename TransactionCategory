@@ -1,9 +1,9 @@
 import java.awt.Color;
 import java.io.Serializable;
 enum TransactionCategory {
-    INCOME("Income", new Color(76, 175, 80)),
-    EXPEND("Expend", new Color(244, 67, 54)),
-    SAVING("Saving", new Color(33, 150, 243));
+    PEMASUKKAN("Pemasukkan", new Color(76, 175, 80)),
+    PENGELUARAN("Pengeluaran", new Color(244, 67, 54)),
+    SAVING("Tabungan", new Color(33, 150, 243));
 
     private final String displayName;
     private final Color color;
