@@ -1,0 +1,28 @@
+import java.time.LocalDate;
+import java.io.Serializable;
+
+class Transaction implements Serializable {
+
+
+    public LocalDate date;
+    public TransactionCategory category;
+    public String subCategory;
+    public double amount;
+    public String description;
+
+    public Transaction(
+            LocalDate date,
+            TransactionCategory category,
+            String subCategory,
+            double amount,
+            String description
+    ) {
+        this.date = date;
+        this.category = category;
+        this.subCategory = subCategory;
+        this.amount = amount;
+        this.description = description;
+    }
+
+
+}
