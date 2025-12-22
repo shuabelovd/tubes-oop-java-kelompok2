@@ -7,16 +7,21 @@ class Transaction implements Serializable {
     private String subCategory;
     private double amount;
     private String description;
-
     public Transaction(
             LocalDate date,
             TransactionCategory category,
             String subCategory,
             double amount,
             String description
-    ) throws InvalidTransactionException {  
+    ) throws InvalidTransactionException {
+        if (date == null) {
+            throw new InvalidTransactionException("Tanggal tidak boleh kosong!");
+        }
         if (amount < 0) {
             throw new InvalidTransactionException("Nominal tidak boleh negatif!");
+        }
+        if (subCategory == null || subCategory.trim().isEmpty()) {
+            throw new InvalidTransactionException("Sub kategori tidak boleh kosong!");
         }
         this.date = date;
         this.category = category;
@@ -25,7 +30,6 @@ class Transaction implements Serializable {
         this.description = description;
     }
 
-    // Getter
     public LocalDate getDate() {
         return date;
     }
@@ -41,8 +45,4 @@ class Transaction implements Serializable {
     public String getDescription() {
         return description;
     }
-}
-
-
-
 }
