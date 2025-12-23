@@ -10,6 +10,8 @@ public class FinancialTrackerApp {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            // ERROR: Class MainFrame tidak ada / tidak dikenali
             new MainFrame();
         });
     }
