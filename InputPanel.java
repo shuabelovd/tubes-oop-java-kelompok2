@@ -8,11 +8,10 @@ import java.util.Calendar;
 import com.toedter.calendar.JDateChooser;
 
  public class InputPanel extends JFrame{
-    private JDateChooser dateChooser;
+     private JDateChooser dateChooser;
     private JComboBox<TransactionCategory> categoryCombo;
-    private JTextField subCategoryField;
-    private JTextField amountField;
     private JTextField descriptionField;
+    private JTextField amountField;
     private TransactionManager transactionManager;
     private MainFrame mainFrame;
     
@@ -71,27 +70,19 @@ import com.toedter.calendar.JDateChooser;
         gbc.gridy = 1;
         formPanel.add(categoryCombo, gbc);
 
-        // Sub Kategori
-        addFormField(formPanel, gbc, 2, "Sub Kategori:", new Color(255, 218, 185));
-        subCategoryField = createStyledTextField();
-        gbc.gridx = 1;
-        gbc.gridy = 2;
-        formPanel.add(subCategoryField, gbc);
-
-        // Nominal
-        addFormField(formPanel, gbc, 3, "Nominal:", new Color(255, 228, 196));
-        amountField = createStyledTextField();
-        gbc.gridx = 1;
-        gbc.gridy = 3;
-        formPanel.add(amountField, gbc);
-
         // Keterangan
-        addFormField(formPanel, gbc, 4, "Keterangan:", new Color(255, 239, 213));
-        descriptionField = createStyledTextField();
-        gbc.gridx = 1;
-        gbc.gridy = 4;
-        formPanel.add(descriptionField, gbc);
+addFormField(formPanel, gbc, 2, "Keterangan:", new Color(255, 218, 185));
+this.descriptionField = createStyledTextField();
+gbc.gridx = 1;
+gbc.gridy = 2;
+formPanel.add(this.descriptionField, gbc);
 
+// Nominal
+addFormField(formPanel, gbc, 3, "Nominal:", new Color(255, 228, 196));
+this.amountField = createStyledTextField();
+gbc.gridx = 1;
+gbc.gridy = 3;
+formPanel.add(this.amountField, gbc);
         
 
         // Submit Button
@@ -147,22 +138,20 @@ import com.toedter.calendar.JDateChooser;
         .toLocalDate();
 
             TransactionCategory category = (TransactionCategory) categoryCombo.getSelectedItem();
-            String subCategory = subCategoryField.getText().trim();
+            String descriptionText = descriptionField.getText().trim();
             String amountText = amountField.getText().trim();
-            String description = descriptionField.getText().trim();
            
 
-            if (subCategory.isEmpty()) {
-                throw new InvalidTransactionException("Sub Category cannot be empty!");
+            if (descriptionText.isEmpty()) {
+                throw new InvalidTransactionException("Keterangan tidak boleh kosong!");
             }
             if (amountText.isEmpty()) {
-                throw new InvalidTransactionException("Amount cannot be empty!");
+                throw new InvalidTransactionException("Nominal tidak boleh kosong!");
             }
 
             double amount = Double.parseDouble(amountText);
             
-            Transaction transaction = new Transaction(date, category, subCategory, amount, 
-                                                     description);
+            Transaction transaction = new Transaction(date, category, descriptionText, amount);
             transactionManager.addTransaction(transaction);
 
             JOptionPane.showMessageDialog(this, 
@@ -189,10 +178,9 @@ import com.toedter.calendar.JDateChooser;
     private void clearFields() {
     dateChooser.setDate(new Date());
     categoryCombo.setSelectedIndex(0);
-    subCategoryField.setText("");
-    amountField.setText("");
     descriptionField.setText("");
-   
+    amountField.setText("");
+
 }
 
 }
