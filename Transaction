@@ -4,7 +4,7 @@ import java.io.Serializable;
 class Transaction implements Serializable {
     private LocalDate date;
     private TransactionCategory category;
-    private String subCategory;
+    private String Keterangan;
     private double amount;
     private String description;
     public Transaction(
@@ -20,7 +20,7 @@ class Transaction implements Serializable {
         if (amount < 0) {
             throw new InvalidTransactionException("Nominal tidak boleh negatif!");
         }
-        if (subCategory == null || subCategory.trim().isEmpty()) {
+        if (Keterangan == null || Keterangan.trim().isEmpty()) {
             throw new InvalidTransactionException("Keterangan tidak boleh kosong!");
         }
         this.date = date;
