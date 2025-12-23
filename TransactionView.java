@@ -1,17 +1,17 @@
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintWriter;
+import javax.swing.*;
+import javax.swing.table.*;
+import javax.swing.border.*;
+import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
+import java.io.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 
 public class TransactionView extends JPanel {
+    private TransactionManager transactionManager;
     private MainFrame mainFrame;
     private JTable table;
     private DefaultTableModel tableModel;
@@ -93,7 +93,7 @@ public class TransactionView extends JPanel {
         headerPanel.add(filterPanel, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
-        String[] columns = {"Tanggal", "Jenis Transaksi", "Kategori", "Jumlah"};
+        String[] columns = {"Tanggal", "Kategori", "Keterangan", "Jumlah"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -159,7 +159,7 @@ public class TransactionView extends JPanel {
             tableModel.addRow(new Object[]{
                 t.getDate().format(formatter),
                 t.getCategory().getDisplayName(),
-                t.getSubCategory(),
+                t.getDescription(),
                
                 String.format("Rp%.2f", t.getAmount())
             });
@@ -220,7 +220,7 @@ public class TransactionView extends JPanel {
             }
             
             try (PrintWriter writer = new PrintWriter(fileToSave)) {
-                writer.println("Tanggal,Jenis Transaksi,Kategori,Jumlah");
+                writer.println("Tanggal,Kategori,Keterangan,Jumlah");
                 
                 List<Transaction> transactions;
                 if (filterCheckBox.isSelected()) {
@@ -237,7 +237,7 @@ public class TransactionView extends JPanel {
                     writer.println(String.format("%s,%s,%s,%s,%s,Rp%.2f",
                         t.getDate().format(formatter),
                         t.getCategory().getDisplayName(),
-                        t.getSubCategory(),
+                        t.getDescription(),
                       
                         t.getAmount()
                     ));
