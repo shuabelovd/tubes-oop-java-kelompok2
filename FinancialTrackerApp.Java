@@ -10,7 +10,6 @@ public class FinancialTrackerApp {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            
             new MainFrame();
         });
     }
