@@ -10,7 +10,7 @@ class Transaction implements Serializable {
     public Transaction(
             LocalDate date,
             TransactionCategory category,
-            String subCategory,
+            String Keterangan,
             double amount,
             String description
     ) throws InvalidTransactionException {
@@ -21,11 +21,11 @@ class Transaction implements Serializable {
             throw new InvalidTransactionException("Nominal tidak boleh negatif!");
         }
         if (subCategory == null || subCategory.trim().isEmpty()) {
-            throw new InvalidTransactionException("Sub kategori tidak boleh kosong!");
+            throw new InvalidTransactionException("Keterangan tidak boleh kosong!");
         }
         this.date = date;
         this.category = category;
-        this.subCategory = subCategory;
+        this.Keterangan = Keterangan;
         this.amount = amount;
         this.description = description;
     }
@@ -36,8 +36,8 @@ class Transaction implements Serializable {
     public TransactionCategory getCategory() {
         return category;
     }
-    public String getSubCategory() {
-        return subCategory;
+    public String Keterangan() {
+        return Keterangan;
     }
     public double getAmount() {
         return amount;
