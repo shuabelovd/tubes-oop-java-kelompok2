@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.Calendar;
-import com.toedter.calendar.JDateChooser;
+import com.toedter.calendar.JCalendar;
 
 public class InputPanel extends JPanel {
     private JDateChooser dateChooser;
