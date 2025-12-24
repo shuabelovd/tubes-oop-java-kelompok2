@@ -4,30 +4,27 @@ import java.io.Serializable;
 class Transaction implements Serializable {
     private LocalDate date;
     private TransactionCategory category;
-    private String Keterangan;
-    private double amount;
     private String description;
+    private double amount;
     public Transaction(
             LocalDate date,
             TransactionCategory category,
-            String Keterangan,
-            double amount,
-            String description
+            String description,
+            double amount
     ) throws InvalidTransactionException {
         if (date == null) {
-            throw new InvalidTransactionException("Tanggal tidak boleh kosong!");
+            throw new InvalidTransactionException("Silahkan pilih tanggal");
         }
         if (amount < 0) {
-            throw new InvalidTransactionException("Nominal tidak boleh negatif!");
+            throw new InvalidTransactionException("Nominal tidak boleh kosong");
         }
         if (Keterangan == null || Keterangan.trim().isEmpty()) {
             throw new InvalidTransactionException("Keterangan tidak boleh kosong!");
         }
         this.date = date;
         this.category = category;
-        this.Keterangan = Keterangan;
-        this.amount = amount;
         this.description = description;
+        this.amount = amount;
     }
 
     public LocalDate getDate() {
@@ -36,13 +33,11 @@ class Transaction implements Serializable {
     public TransactionCategory getCategory() {
         return category;
     }
-    public String Keterangan() {
-        return Keterangan;
+    public String description() {
+        return description;
     }
     public double getAmount() {
         return amount;
     }
-    public String getDescription() {
-        return description;
     }
 }
