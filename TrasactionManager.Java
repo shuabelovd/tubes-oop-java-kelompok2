@@ -40,7 +40,7 @@ class TransactionManager {
         return getTransactionsByMonth(year, month).stream()
             .filter(t -> t.getCategory() == TransactionCategory.PENGELUARAN)
             .collect(Collectors.groupingBy(
-                Transaction::Keterangan,
+                Transaction::description,
                 Collectors.summingDouble(Transaction::getAmount)
             ));
     }
@@ -48,7 +48,7 @@ class TransactionManager {
         return getTransactionsByMonth(year, month).stream()
             .filter(t -> t.getCategory() == TransactionCategory.PEMASUKAN)
             .collect(Collectors.groupingBy(
-                Transaction::Keterangan,
+                Transaction::description,
                 Collectors.summingDouble(Transaction::getAmount)
             ));
     }
@@ -56,7 +56,7 @@ class TransactionManager {
         return getTransactionsByMonth(year, month).stream()
             .filter(t -> t.getCategory() == TransactionCategory.SAVING)
             .collect(Collectors.groupingBy(
-                Transaction::Keterangan,
+                Transaction::description,
                 Collectors.summingDouble(Transaction::getAmount)
             ));
     }
