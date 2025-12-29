@@ -1,4 +1,6 @@
 package GUI;
+
+import GUI.*;
 import javax.swing.*;
 import javax.swing.table.*;
 import javax.swing.border.*;
@@ -6,8 +8,6 @@ import java.awt.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.io.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class TransactionView extends JPanel {
     private TransactionManager transactionManager;
@@ -24,6 +24,7 @@ public class TransactionView extends JPanel {
         setLayout(new BorderLayout());
         setBackground(new Color(245, 245, 250));
 
+        // Header Panel
         JPanel headerPanel = new JPanel(new BorderLayout());
         headerPanel.setBackground(new Color(184, 219, 128));
         headerPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -33,9 +34,11 @@ public class TransactionView extends JPanel {
         headerLabel.setForeground(Color.BLACK);
         headerPanel.add(headerLabel, BorderLayout.WEST);
 
+        // Filter Panel
         JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         filterPanel.setBackground(new Color(184, 219, 128));
 
+        // Checkbox Filter
         filterCheckBox = new JCheckBox("Filter per Bulan");
         filterCheckBox.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         filterCheckBox.setForeground(Color.BLACK);
@@ -46,6 +49,7 @@ public class TransactionView extends JPanel {
             refresh();
         });
 
+        // Month ComboBox
         String[] months = {"Januari", "Februari", "Maret", "April", "Mei", "Juni", 
                           "Juli", "Agustus", "September", "Oktober", "November", "Desember"};
         monthCombo = new JComboBox<>(months);
@@ -58,6 +62,7 @@ public class TransactionView extends JPanel {
             }
         });
 
+        // Year ComboBox
         Integer[] years = new Integer[20];
         int currentYear = LocalDate.now().getYear();
         for (int i = 0; i < 20; i++) {
@@ -73,25 +78,37 @@ public class TransactionView extends JPanel {
             }
         });
 
-        
+        // Edit Button
+        JButton editButton = new JButton("Edit");
+        editButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        editButton.setBackground(new Color(33, 150, 243));
+        editButton.setForeground(Color.WHITE);
+        editButton.setFocusPainted(false);
+        editButton.setBorderPainted(false);
+        editButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        editButton.addActionListener(e -> editSelectedTransaction());
 
+        // Delete Button
         JButton deleteButton = new JButton("Hapus");
         deleteButton.setFont(new Font("Segoe UI", Font.BOLD, 12));
         deleteButton.setBackground(new Color(244, 67, 54));
-    
+        deleteButton.setForeground(Color.WHITE);
         deleteButton.setFocusPainted(false);
+        deleteButton.setBorderPainted(false);
         deleteButton.setCursor(new Cursor(Cursor.HAND_CURSOR));
         deleteButton.addActionListener(e -> deleteSelectedTransaction());
 
+        // Add components to filter panel
         filterPanel.add(filterCheckBox);
         filterPanel.add(monthCombo);
         filterPanel.add(yearCombo);
-    
+        filterPanel.add(editButton);
         filterPanel.add(deleteButton);
 
         headerPanel.add(filterPanel, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
+        // Table Setup
         String[] columns = {"Tanggal", "Kategori", "Keterangan", "Jumlah"};
         tableModel = new DefaultTableModel(columns, 0) {
             @Override
@@ -105,15 +122,17 @@ public class TransactionView extends JPanel {
         table.setRowHeight(30);
         table.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 14));
         table.getTableHeader().setBackground(new Color(184, 219, 128));
-      
+        table.getTableHeader().setForeground(Color.BLACK);
         table.setSelectionBackground(new Color(184, 219, 128));
+        table.setSelectionForeground(Color.BLACK);
 
+        // Column Width
         table.getColumnModel().getColumn(0).setPreferredWidth(100);
         table.getColumnModel().getColumn(1).setPreferredWidth(120);
-        table.getColumnModel().getColumn(2).setPreferredWidth(120);
-      
+        table.getColumnModel().getColumn(2).setPreferredWidth(200);
         table.getColumnModel().getColumn(3).setPreferredWidth(100);
 
+        // Custom Cell Renderer for Amount Column
         table.getColumnModel().getColumn(3).setCellRenderer(new DefaultTableCellRenderer() {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value,
@@ -121,12 +140,16 @@ public class TransactionView extends JPanel {
                 Component c = super.getTableCellRendererComponent(table, value, 
                                                                  isSelected, hasFocus, row, column);
                 String type = (String) table.getValueAt(row, 1);
-                if (type.equals("Pemasukan")) {
-                    c.setForeground(new Color(76, 175, 80));
-                } else if (type.equals("Pengeluaran")) {
-                    c.setForeground(new Color(244, 67, 54));
+                if (!isSelected) {
+                    if (type.equals("Pemasukan")) {
+                        c.setForeground(new Color(76, 175, 80));
+                    } else if (type.equals("Pengeluaran")) {
+                        c.setForeground(new Color(244, 67, 54));
+                    } else {
+                        c.setForeground(new Color(33, 150, 243));
+                    }
                 } else {
-                    c.setForeground(new Color(33, 150, 243));
+                    c.setForeground(Color.BLACK);
                 }
                 ((JLabel) c).setHorizontalAlignment(SwingConstants.RIGHT);
                 return c;
@@ -159,10 +182,38 @@ public class TransactionView extends JPanel {
                 t.getDate().format(formatter),
                 t.getCategory().getDisplayName(),
                 t.getDescription(),
-               
                 String.format("Rp%.2f", t.getAmount())
             });
         }
+    }
+
+    private void editSelectedTransaction() {
+        int selectedRow = table.getSelectedRow();
+        if (selectedRow == -1) {
+            JOptionPane.showMessageDialog(this, 
+                "Silakan pilih transaksi yang ingin diedit!", 
+                "Tidak Ada Pilihan", 
+                JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+
+        List<Transaction> allTransactions = transactionManager.getAllTransactions();
+        Transaction toEdit;
+        int actualIndex;
+        
+        if (filterCheckBox.isSelected()) {
+            int month = monthCombo.getSelectedIndex() + 1;
+            int year = (Integer) yearCombo.getSelectedItem();
+            List<Transaction> filteredTransactions = transactionManager.getTransactionsByMonth(year, month);
+            
+            toEdit = filteredTransactions.get(selectedRow);
+            actualIndex = allTransactions.indexOf(toEdit);
+        } else {
+            toEdit = allTransactions.get(selectedRow);
+            actualIndex = selectedRow;
+        }
+        
+        mainFrame.switchToInputPanel(toEdit, actualIndex);
     }
 
     private void deleteSelectedTransaction() {
@@ -202,52 +253,6 @@ public class TransactionView extends JPanel {
                 "Transaksi berhasil dihapus!", 
                 "Berhasil", 
                 JOptionPane.INFORMATION_MESSAGE);
-        }
-    }
-
-    private void exportToCSV() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Simpan Transaksi sebagai CSV");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
-        
-        int userSelection = fileChooser.showSaveDialog(this);
-        
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File fileToSave = fileChooser.getSelectedFile();
-            if (!fileToSave.getName().endsWith(".csv")) {
-                fileToSave = new File(fileToSave.getAbsolutePath() + ".csv");
-            }
-            
-            try (PrintWriter writer = new PrintWriter(fileToSave)) {
-                writer.println("Tanggal,Kategori,Keterangan,Jumlah");
-                
-                List<Transaction> transactions;
-                if (filterCheckBox.isSelected()) {
-                    int month = monthCombo.getSelectedIndex() + 1;
-                    int year = (Integer) yearCombo.getSelectedItem();
-                    transactions = transactionManager.getTransactionsByMonth(year, month);
-                } else {
-                    transactions = transactionManager.getAllTransactions();
-                }
-                
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                
-                for (Transaction t : transactions) {
-                    writer.println(String.format("%s,%s,%s,%s,%s,Rp%.2f",
-                        t.getDate().format(formatter),
-                        t.getCategory().getDisplayName(),
-                        t.getDescription(),
-                      
-                        t.getAmount()
-                    ));
-                }
-                
-                JOptionPane.showMessageDialog(this, "Transaksi berhasil diekspor!", 
-                                            "Berhasil", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Gagal mengekspor data: " + e.getMessage(), 
-                                            "Error", JOptionPane.ERROR_MESSAGE);
-            }
         }
     }
 }
