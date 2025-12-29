@@ -1,14 +1,12 @@
 package GUI;
+import GUI.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.*;
 import java.time.LocalDate;
-import java.util.Map;
-import java.io.*;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class MonthlyDashboard {
-     private TransactionManager transactionManager;
+public class MonthlyDashboard extends JPanel {
+    private TransactionManager transactionManager;
     private JComboBox<String> monthCombo;
     private JComboBox<Integer> yearCombo;
     private JLabel totalIncomeLabel;
@@ -24,11 +22,8 @@ public class MonthlyDashboard {
         setLayout(new BorderLayout());
         setBackground(new Color(255, 228, 239));
 
-        // Header Panel
-        JPanel headerPanel = createHeaderPanel();
-        add(headerPanel, BorderLayout.NORTH);
+        add(createHeaderPanel(), BorderLayout.NORTH);
 
-        // Main Content Panel
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(new Color(243, 158, 182));
         mainPanel.setBorder(new EmptyBorder(20, 20, 20, 20));
@@ -39,9 +34,9 @@ public class MonthlyDashboard {
         gbc.weightx = 1;
         gbc.weighty = 1;
 
-        // Summary Cards (Row 0)
+        // Summary Cards
         gbc.gridx = 0; gbc.gridy = 0; gbc.gridwidth = 1;
-        mainPanel.add(createSummaryCard("Total Pemasukkan", "Rp0.00", new Color(76, 175, 80), true), gbc);
+        mainPanel.add(createSummaryCard("Total Pemasukan", "Rp0.00", new Color(76, 175, 80), true), gbc);
         
         gbc.gridx = 1;
         mainPanel.add(createSummaryCard("Total Pengeluaran", "Rp0.00", new Color(244, 67, 54), false), gbc);
@@ -52,17 +47,16 @@ public class MonthlyDashboard {
         gbc.gridx = 3;
         mainPanel.add(createSummaryCard("Sisa", "Rp0.00", new Color(255, 152, 0), false), gbc);
 
-        // Charts (Row 1)
+        // Charts
         gbc.gridy = 1;
         gbc.gridx = 0; gbc.gridwidth = 2;
         expenseChartPanel = new PieChartPanel("Pengeluaran");
         mainPanel.add(createChartCard(expenseChartPanel, new Color(244, 67, 54)), gbc);
 
         gbc.gridx = 2; gbc.gridwidth = 2;
-        incomeChartPanel = new PieChartPanel("Pemasukkan");
+        incomeChartPanel = new PieChartPanel("Pemasukan");
         mainPanel.add(createChartCard(incomeChartPanel, new Color(76, 175, 80)), gbc);
 
-        // Savings Chart (Row 2)
         gbc.gridy = 2;
         gbc.gridx = 0; gbc.gridwidth = 4;
         savingsChartPanel = new PieChartPanel("Tabungan");
@@ -75,45 +69,39 @@ public class MonthlyDashboard {
 
     private JPanel createHeaderPanel() {
         JPanel panel = new JPanel(new BorderLayout());
-        panel.setBackground(new Color (253, 181, 206));
+        panel.setBackground(new Color(253, 181, 206));
         panel.setBorder(new EmptyBorder(20, 20, 20, 20));
 
         JLabel titleLabel = new JLabel("Rekap Bulanan");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 28));
-        titleLabel.setForeground(new Color (19, 36, 64));
+        titleLabel.setForeground(new Color(19, 36, 64));
         panel.add(titleLabel, BorderLayout.WEST);
 
-        // Month and Year Selector
         JPanel selectorPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 0));
         selectorPanel.setBackground(new Color(253, 181, 206));
 
-        String[] months = {"January", "February", "March", "April", "May", "June", 
-                          "July", "August", "September", "October", "November", "December"};
+        String[] months = {"Januari", "Februari", "Maret", "April", "Mei", "Juni", 
+                          "Juli", "Agustus", "September", "Oktober", "November", "Desember"};
         monthCombo = new JComboBox<>(months);
         monthCombo.setSelectedIndex(LocalDate.now().getMonthValue() - 1);
         monthCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         monthCombo.addActionListener(e -> refresh());
         
         Integer[] years = new Integer[20];
-int currentYear = LocalDate.now().getYear();
-for (int i = 0; i < 20; i++) {
-    years[i] = currentYear - 10 + i;
-}
+        int currentYear = LocalDate.now().getYear();
+        for (int i = 0; i < 20; i++) {
+            years[i] = currentYear - 10 + i;
+        }
         yearCombo = new JComboBox<>(years);
         yearCombo.setSelectedItem(currentYear);
         yearCombo.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         yearCombo.addActionListener(e -> refresh());
 
-       
-       
-        JPanel rightPanel = new JPanel();
-    rightPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
-
-        rightPanel.add(new JLabel("📅"));
-        rightPanel.add(monthCombo);
-        rightPanel.add(yearCombo);
+        selectorPanel.add(new JLabel("📅"));
+        selectorPanel.add(monthCombo);
+        selectorPanel.add(yearCombo);
         
-        panel.add(rightPanel, BorderLayout.EAST);
+        panel.add(selectorPanel, BorderLayout.EAST);
 
         return panel;
     }
@@ -173,55 +161,5 @@ for (int i = 0; i < 20; i++) {
         expenseChartPanel.updateData(transactionManager.getExpensesByCategory(year, month));
         incomeChartPanel.updateData(transactionManager.getIncomeByCategory(year, month));
         savingsChartPanel.updateData(transactionManager.getSavingsByCategory(year, month));
-    }
-
-    private void exportToCSV() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Simpan Dashboard sebagai CSV");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("CSV files", "csv"));
-        
-        int userSelection = fileChooser.showSaveDialog(this);
-        
-        if (userSelection == JFileChooser.APPROVE_OPTION) {
-            File fileToSave = fileChooser.getSelectedFile();
-            if (!fileToSave.getName().endsWith(".csv")) {
-                fileToSave = new File(fileToSave.getAbsolutePath() + ".csv");
-            }
-            
-            try (PrintWriter writer = new PrintWriter(fileToSave)) {
-                int month = monthCombo.getSelectedIndex() + 1;
-                int year = (Integer) yearCombo.getSelectedItem();
-                
-                writer.println("Dashboard Bulanan - " + monthCombo.getSelectedItem() + " " + year);
-                writer.println();
-                writer.println("Ringkasan");
-                writer.println("Total Pemasukan,Rp" + transactionManager.getTotalIncome(year, month));
-                writer.println("Total Pengeluaran,Rp" + transactionManager.getTotalExpense(year, month));
-                writer.println("Total Tabungan,Rp" + transactionManager.getTotalSavings(year, month));
-                writer.println("Sisa,Rp" + (transactionManager.getTotalIncome(year, month) - 
-                              transactionManager.getTotalExpense(year, month) - 
-                              transactionManager.getTotalSavings(year, month)));
-                writer.println();
-                
-                writer.println("Pengeluaran per Kategori");
-                Map<String, Double> expenses = transactionManager.getExpensesByCategory(year, month);
-                for (Map.Entry<String, Double> entry : expenses.entrySet()) {
-                    writer.println(entry.getKey() + ",Rp" + entry.getValue());
-                }
-                writer.println();
-                
-                writer.println("Pemasukan per Kategori");
-                Map<String, Double> income = transactionManager.getIncomeByCategory(year, month);
-                for (Map.Entry<String, Double> entry : income.entrySet()) {
-                    writer.println(entry.getKey() + ",Rp" + entry.getValue());
-                }
-                
-                JOptionPane.showMessageDialog(this, "Dashboard berhasil diekspor!", 
-                                            "Berhasil", JOptionPane.INFORMATION_MESSAGE);
-            } catch (IOException e) {
-                JOptionPane.showMessageDialog(this, "Gagal mengekspor data: " + e.getMessage(), 
-                                            "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        }
     }
 }
