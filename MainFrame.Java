@@ -1,8 +1,12 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
 package tubes1;
 import javax.swing.*;
 import java.awt.*;
-import javax.swing.*;
-import java.awt.*;
+
+
 class MainFrame extends JFrame {
     private JTabbedPane tabbedPane;
     private InputPanel inputPanel;
@@ -44,5 +48,10 @@ class MainFrame extends JFrame {
 
     public void switchToTransactionView() {
         tabbedPane.setSelectedIndex(2);
+    }
+    
+    public void switchToInputPanel(Transaction transaction, int index) {
+        inputPanel.setEditMode(transaction, index);
+        tabbedPane.setSelectedIndex(0);
     }
 }
